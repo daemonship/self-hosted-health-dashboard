@@ -29,6 +29,10 @@ func (s *server) routes() *http.ServeMux {
 	// Metrics ingestion (agent token auth — no session required)
 	mux.HandleFunc("POST /api/metrics", s.handleMetricsPost)
 
+	// Business event ingestion (X-API-Key header auth)
+	mux.HandleFunc("POST /api/events", s.requireAPIKey(s.handleEventPost))
+	mux.HandleFunc("GET /api/events/summary", s.requireAPIKey(s.handleEventSummary))
+
 	// Monitor CRUD API (session auth)
 	mux.HandleFunc("POST /api/monitors", s.requireAuthAPI(s.handleMonitorCreate))
 	mux.HandleFunc("GET /api/monitors", s.requireAuthAPI(s.handleMonitorList))

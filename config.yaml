@@ -22,3 +22,8 @@ agent:
 alerts:
   # Optional webhook URL for monitor-down notifications (Task 6).
   webhook_url: ""
+
+events:
+  # API key for the business event ingestion endpoint.
+  # Pass as X-API-Key header when posting events.
+  api_key: "change-events-api-key-before-deploying"

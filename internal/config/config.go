@@ -11,6 +11,11 @@ type Config struct {
 	Auth    AuthConfig    `yaml:"auth"`
 	Agent   AgentConfig   `yaml:"agent"`
 	Alerts  AlertsConfig  `yaml:"alerts"`
+	Events  EventsConfig  `yaml:"events"`
+}
+
+type EventsConfig struct {
+	APIKey string `yaml:"api_key"`
 }
 
 type ServerConfig struct {
