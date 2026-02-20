@@ -1,0 +1,24 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  # Persistent SQLite data directory — mount as a Docker volume.
+  data_dir: "/data"
+
+auth:
+  # Password for the single-user dashboard login.
+  # Store a bcrypt hash here for production:
+  #   ./server --hash-password 'yourpassword'
+  # The plaintext fallback below is for development only.
+  password: "changeme"
+  # Random secret for session token signing — change before deploying.
+  session_secret: "change-me-before-deploying"
+
+agent:
+  # Shared token the agent uses to authenticate metric POSTs.
+  token: "change-agent-token-before-deploying"
+  # URL of the health-dashboard server (used by the agent binary).
+  server_url: "http://localhost:8080"
+
+alerts:
+  # Optional webhook URL for monitor-down notifications (Task 6).
+  webhook_url: ""
