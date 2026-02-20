@@ -33,6 +33,11 @@ func (s *server) routes() *http.ServeMux {
 	mux.HandleFunc("POST /api/events", s.requireAPIKey(s.handleEventPost))
 	mux.HandleFunc("GET /api/events/summary", s.requireAPIKey(s.handleEventSummary))
 
+	// Dashboard data endpoints (session auth — used by the frontend)
+	mux.HandleFunc("GET /api/dashboard/monitors", s.requireAuthAPI(s.handleDashboardMonitors))
+	mux.HandleFunc("GET /api/dashboard/metrics", s.requireAuthAPI(s.handleDashboardMetrics))
+	mux.HandleFunc("GET /api/dashboard/events", s.requireAuthAPI(s.handleDashboardEvents))
+
 	// Monitor CRUD API (session auth)
 	mux.HandleFunc("POST /api/monitors", s.requireAuthAPI(s.handleMonitorCreate))
 	mux.HandleFunc("GET /api/monitors", s.requireAuthAPI(s.handleMonitorList))

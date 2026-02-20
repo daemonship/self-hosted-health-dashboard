@@ -1,0 +1,165 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0f1117;
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────────────── */
+
+.layout { display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: #1a1d27;
+  border-bottom: 1px solid #2d3148;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-title { font-size: 1rem; font-weight: 700; color: #f8fafc; letter-spacing: -0.01em; }
+.topbar-right { display: flex; align-items: center; gap: 1rem; }
+
+.topbar-error { color: #f87171; font-size: 0.8rem; }
+.topbar-updated { color: #475569; font-size: 0.8rem; }
+
+.logout-btn {
+  padding: 0.3rem 0.75rem;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #2d3148;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+.logout-btn:hover { color: #e2e8f0; border-color: #4a5568; }
+
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ─── Section card ───────────────────────────────────────────────────────── */
+
+.section {
+  background: #1a1d27;
+  border: 1px solid #2d3148;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+}
+
+.section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #475569;
+  margin-bottom: 1rem;
+}
+
+.muted { color: #475569; font-size: 0.875rem; }
+
+/* ─── Monitors ───────────────────────────────────────────────────────────── */
+
+.monitors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.875rem;
+}
+
+.monitor-card {
+  background: #0f1117;
+  border: 1px solid #2d3148;
+  border-radius: 6px;
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.monitor-top { display: flex; align-items: center; gap: 0.5rem; }
+
+.status-pill {
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.monitor-name { font-weight: 600; font-size: 0.9rem; color: #f1f5f9; }
+.monitor-url  { font-size: 0.75rem; color: #475569; word-break: break-all; }
+
+.monitor-stats { display: flex; gap: 1.5rem; margin-top: 0.1rem; }
+.stat { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.875rem; font-weight: 600; color: #cbd5e1; }
+.stat-label { font-size: 0.65rem; font-weight: 500; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ─── Metrics ────────────────────────────────────────────────────────────── */
+
+.gauges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 1.25rem;
+  align-items: flex-start;
+}
+
+.gauge { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+.gauge-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; }
+.gauge-sub   { font-size: 0.65rem; color: #475569; }
+
+.chart-wrap { width: 100%; overflow: hidden; }
+
+/* uPlot dark-theme overrides */
+.uplot { background: transparent !important; }
+.uplot .u-title { color: #94a3b8; }
+.uplot .u-legend { background: transparent !important; font-size: 0.75rem; color: #64748b; }
+.uplot .u-legend .u-series > * { padding: 2px 6px; }
+.uplot .u-legend .u-marker { width: 10px; height: 4px; border-radius: 999px; }
+
+/* ─── Events ─────────────────────────────────────────────────────────────── */
+
+.events-table {
+  border: 1px solid #2d3148;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.events-header {
+  display: grid;
+  grid-template-columns: 1fr 120px 130px;
+  padding: 0.5rem 1rem;
+  background: #0f1117;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+}
+
+.events-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 130px;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid #2d3148;
+  align-items: center;
+  transition: background 0.1s;
+}
+.events-row:hover { background: rgba(99,102,241,0.04); }
+
+.event-name  { font-size: 0.875rem; color: #cbd5e1; font-family: ui-monospace, "Cascadia Code", monospace; }
+.event-today { font-size: 1rem; font-weight: 700; color: #6366f1; padding-right: 1rem; }
+.event-7d    { font-size: 1rem; font-weight: 700; color: #94a3b8; padding-right: 1rem; }
