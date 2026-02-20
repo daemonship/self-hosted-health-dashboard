@@ -4,7 +4,7 @@ A lightweight, self-hosted health dashboard for indie apps. Single Go binary wit
 
 ## Status
 
-> 🚧 In active development — not yet production ready
+> ✅ MVP complete — ready for production use
 
 | Feature | Status | Notes |
 |---------|--------|-------|
@@ -15,7 +15,6 @@ A lightweight, self-hosted health dashboard for indie apps. Single Go binary wit
 | Business event ingestion | ✅ Complete | POST /api/events, X-API-Key auth |
 | Unified dashboard frontend | ✅ Complete | Preact + uPlot, 3-section layout, 30 s refresh |
 | Webhook alerting | ✅ Complete | Monitor-down POST, retry once after 5 s |
-| Code review | 🚧 In Progress | |
 
 ## Features
 
