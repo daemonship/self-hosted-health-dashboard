@@ -1,16 +1,21 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"health-dashboard/internal/auth"
 	"health-dashboard/internal/config"
 	"health-dashboard/internal/db"
+	"health-dashboard/internal/monitor"
 )
 
 func main() {
@@ -46,19 +51,47 @@ func main() {
 	}
 	defer database.Close()
 
+	// Signal-aware context — cancels when the process receives SIGINT/SIGTERM.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	monitorStore := monitor.NewStore(database)
+	checker := monitor.NewChecker(monitorStore)
+	if err := checker.Start(ctx); err != nil {
+		log.Fatalf("checker start: %v", err)
+	}
+
 	sessions := auth.NewStore()
 
 	srv := &server{
 		cfg:      cfg,
 		db:       database,
 		sessions: sessions,
+		monitors: monitorStore,
+		checker:  checker,
 	}
 
-	mux := srv.routes()
-
-	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-	log.Printf("health-dashboard listening on %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
-		log.Fatalf("server: %v", err)
+	httpSrv := &http.Server{
+		Addr:    fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
+		Handler: srv.routes(),
 	}
+
+	// Serve in a goroutine so we can react to the shutdown signal.
+	go func() {
+		log.Printf("health-dashboard listening on %s", httpSrv.Addr)
+		if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("server: %v", err)
+		}
+	}()
+
+	// Block until SIGINT/SIGTERM.
+	<-ctx.Done()
+	log.Println("shutting down...")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := httpSrv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("http shutdown: %v", err)
+	}
+	checker.Stop()
 }
