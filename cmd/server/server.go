@@ -26,6 +26,9 @@ func (s *server) routes() *http.ServeMux {
 	mux.HandleFunc("POST /login", s.handleLogin)
 	mux.HandleFunc("POST /logout", s.handleLogout)
 
+	// Metrics ingestion (agent token auth — no session required)
+	mux.HandleFunc("POST /api/metrics", s.handleMetricsPost)
+
 	// Monitor CRUD API (session auth)
 	mux.HandleFunc("POST /api/monitors", s.requireAuthAPI(s.handleMonitorCreate))
 	mux.HandleFunc("GET /api/monitors", s.requireAuthAPI(s.handleMonitorList))

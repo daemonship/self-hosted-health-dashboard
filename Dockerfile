@@ -7,7 +7,8 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o server ./cmd/server
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o server ./cmd/server && \
+    CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o agent ./cmd/agent
 
 # ---- runtime stage ----
 FROM alpine:3.19
@@ -17,6 +18,9 @@ RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
 
 COPY --from=builder /app/server .
+# The agent binary reads /proc — run it directly on the host, not in a container.
+# Extract it with: docker cp <container>:/app/agent ./agent
+COPY --from=builder /app/agent .
 COPY config.yaml .
 
 # /data is the SQLite volume mount point.
