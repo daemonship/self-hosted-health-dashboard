@@ -13,17 +13,19 @@ const failureThreshold = 3
 
 // Checker manages a pool of goroutines that periodically probe monitors.
 type Checker struct {
-	store  *Store
-	mu     sync.Mutex
-	cancel map[int64]context.CancelFunc
-	wg     sync.WaitGroup
+	store   *Store
+	alerter *Alerter
+	mu      sync.Mutex
+	cancel  map[int64]context.CancelFunc
+	wg      sync.WaitGroup
 }
 
 // NewChecker creates a Checker backed by store.
-func NewChecker(store *Store) *Checker {
+func NewChecker(store *Store, alerter *Alerter) *Checker {
 	return &Checker{
-		store:  store,
-		cancel: make(map[int64]context.CancelFunc),
+		store:   store,
+		alerter: alerter,
+		cancel:  make(map[int64]context.CancelFunc),
 	}
 }
 
@@ -185,6 +187,8 @@ func (c *Checker) updateState(monitorID int64, isUp bool) {
 		return
 	}
 
+	prevState := m.State
+
 	var newState string
 	var failures int
 
@@ -203,5 +207,11 @@ func (c *Checker) updateState(monitorID int64, isUp bool) {
 
 	if err := c.store.UpdateState(monitorID, newState, failures); err != nil {
 		log.Printf("monitor %d: update state: %v", monitorID, err)
+		return
+	}
+
+	// Fire webhook alert on the first transition into "down".
+	if newState == "down" && prevState != "down" {
+		go c.alerter.Notify(m)
 	}
 }

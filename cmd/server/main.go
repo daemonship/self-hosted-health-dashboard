@@ -56,7 +56,8 @@ func main() {
 	defer stop()
 
 	monitorStore := monitor.NewStore(database)
-	checker := monitor.NewChecker(monitorStore)
+	alerter := monitor.NewAlerter(cfg.Alerts.WebhookURL)
+	checker := monitor.NewChecker(monitorStore, alerter)
 	if err := checker.Start(ctx); err != nil {
 		log.Fatalf("checker start: %v", err)
 	}
