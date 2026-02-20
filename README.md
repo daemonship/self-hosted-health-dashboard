@@ -2,13 +2,29 @@
 
 A lightweight, self-hosted health dashboard for indie apps. Single Go binary with SQLite, no external dependencies.
 
+## Status
+
+> 🚧 In active development — not yet production ready
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Project scaffold & CI | ✅ Complete | Go 1.22, SQLite WAL, Docker |
+| Auth & health endpoint | ✅ Complete | bcrypt, session cookies |
+| Uptime monitor CRUD API | ✅ Complete | HTTP checker, configurable intervals |
+| System agent binary | ✅ Complete | CPU/mem/disk via /proc, 30 s interval |
+| Business event ingestion | ✅ Complete | POST /api/events, X-API-Key auth |
+| Unified dashboard frontend | ✅ Complete | Preact + uPlot, 3-section layout, 30 s refresh |
+| Webhook alerting | 🚧 In Progress | Monitor-down POST webhook |
+| Code review | 📋 Planned | |
+
 ## Features
 
-- **Uptime monitoring** — HTTP checks with configurable intervals and alerting
-- **System metrics** — CPU, memory, and disk tracking via a companion agent binary
+- **Unified dashboard** — Three-section Preact UI: uptime monitors, system metrics gauges + time-series chart, and business event counters. Auto-refreshes every 30 s.
+- **Uptime monitoring** — HTTP checks with configurable intervals; 24-hour uptime % visible at a glance
+- **System metrics** — CPU, memory, and disk tracking via a companion agent binary; 24 h history charted with uPlot
 - **Business events** — Lightweight event ingestion API for tracking signups, conversions, etc.
 - **Single-user auth** — Session-based login with bcrypt password hashing
-- **7-day retention** — Automatic pruning of old data
+- **7-day retention** — Automatic pruning of old data; all JS/CSS bundled offline (no CDN at runtime)
 
 ## Quick Start
 
