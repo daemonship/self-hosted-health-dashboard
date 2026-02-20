@@ -14,8 +14,8 @@ A lightweight, self-hosted health dashboard for indie apps. Single Go binary wit
 | System agent binary | ✅ Complete | CPU/mem/disk via /proc, 30 s interval |
 | Business event ingestion | ✅ Complete | POST /api/events, X-API-Key auth |
 | Unified dashboard frontend | ✅ Complete | Preact + uPlot, 3-section layout, 30 s refresh |
-| Webhook alerting | 🚧 In Progress | Monitor-down POST webhook |
-| Code review | 📋 Planned | |
+| Webhook alerting | ✅ Complete | Monitor-down POST, retry once after 5 s |
+| Code review | 🚧 In Progress | |
 
 ## Features
 
@@ -23,6 +23,7 @@ A lightweight, self-hosted health dashboard for indie apps. Single Go binary wit
 - **Uptime monitoring** — HTTP checks with configurable intervals; 24-hour uptime % visible at a glance
 - **System metrics** — CPU, memory, and disk tracking via a companion agent binary; 24 h history charted with uPlot
 - **Business events** — Lightweight event ingestion API for tracking signups, conversions, etc.
+- **Webhook alerting** — POST notification when a monitor transitions to down; retries once on failure
 - **Single-user auth** — Session-based login with bcrypt password hashing
 - **7-day retention** — Automatic pruning of old data; all JS/CSS bundled offline (no CDN at runtime)
 
@@ -124,6 +125,32 @@ Returns per-event totals for today and the trailing 7 days:
   {"event_name": "signup",   "today": 3,      "last_7_days": 21}
 ]
 ```
+
+## Webhook Alerting
+
+Set `alerts.webhook_url` in `config.yaml` to receive a POST request whenever a monitor transitions to **down** (after 3 consecutive failures).
+
+**Payload:**
+
+```json
+{
+  "monitor_name": "My App",
+  "url":          "https://example.com",
+  "status":       "down",
+  "timestamp":    "2026-02-19T12:34:56Z"
+}
+```
+
+The webhook is fired once on the state transition. If the POST fails, it retries once after 5 seconds. Attempts are logged to stdout. There is no alert history UI — check your webhook receiver or server logs.
+
+**Example — send to a Slack-compatible endpoint:**
+
+```bash
+alerts:
+  webhook_url: "https://hooks.slack.com/services/T000/B000/xxxx"
+```
+
+Leave `webhook_url` empty (the default) to disable alerting.
 
 ## Uptime Monitor API
 
